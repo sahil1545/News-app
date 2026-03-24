@@ -52,12 +52,13 @@ export class News extends Component {
       let data = await fetch(url);
       
       if (!data.ok) {
-        throw new Error(`HTTP error! status: ${data.status}`);
+        const errorData = await data.json();
+        throw new Error(errorData.message || `HTTP error! status: ${data.status}`);
       }
       
       let parsedData = await data.json();
       
-      // Handle both real API and mock data responses
+      // Handle API errors from serverless function
       if (parsedData.error) {
         throw new Error(parsedData.message || 'API returned an error');
       }
@@ -101,12 +102,13 @@ export class News extends Component {
       let data = await fetch(url);
       
       if (!data.ok) {
-        throw new Error(`HTTP error! status: ${data.status}`);
+        const errorData = await data.json();
+        throw new Error(errorData.message || `HTTP error! status: ${data.status}`);
       }
       
       let parsedData = await data.json();
       
-      // Handle both real API and mock data responses
+      // Handle API errors from serverless function
       if (parsedData.error) {
         throw new Error(parsedData.message || 'API returned an error');
       }
