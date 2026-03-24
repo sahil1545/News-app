@@ -34,49 +34,18 @@ export class News extends Component {
 
   async UpdateNews(){
     try {
-      const apiKey = '9d27c0e98d9d1ba30340b3f6088cf746';
+      // Use Vercel proxy API to avoid CORS issues
+      const categoryMap = {
+        'business': 'business',
+        'entertainment': 'entertainment',
+        'health': 'health',
+        'science': 'science',
+        'sports': 'sports',
+        'technology': 'technology'
+      };
       
-      // Gnews API categories for Indian news
-      let category = 'general'; // default
-      
-      // Map categories to Gnews supported categories
-      switch(this.props.category.toLowerCase()) {
-        case 'business':
-          category = 'business';
-          break;
-        case 'entertainment':
-          category = 'entertainment';
-          break;
-        case 'health':
-          category = 'health';
-          break;
-        case 'science':
-          category = 'science';
-          break;
-        case 'sports':
-          category = 'sports';
-          break;
-        case 'technology':
-          category = 'technology';
-          break;
-        default:
-          category = 'general';
-      }
-      
-      // console.log(`Fetching news for category: ${this.props.category} -> ${category}`);
-      // console.log(`API URL: ${url}`);
-      
-      // Try different approaches for different categories
-      let url;
-      if (category === 'general') {
-        // For general, use top-headlines without category filter
-        url = `https://gnews.io/api/v4/top-headlines?lang=en&country=in&apikey=${apiKey}&page=${this.state.page}&max=${this.props.pageSize}`;
-      } else {
-        // For specific categories, use search with topic
-        url = `https://gnews.io/api/v4/search?q=${category}&lang=en&country=in&apikey=${apiKey}&page=${this.state.page}&max=${this.props.pageSize}`;
-      }
-      
-      // console.log(`API URL: ${url}`);
+      const category = categoryMap[this.props.category.toLowerCase()] || 'general';
+      const url = `/api/news?category=${category}&page=${this.state.page}&max=${this.props.pageSize}`;
       
       this.setState({ loading: true, error: null });
       
@@ -88,10 +57,8 @@ export class News extends Component {
       
       let parsedData = await data.json();
       
-      // console.log(`API Response:`, parsedData);
-      
-      if (parsedData.errors && parsedData.errors.length > 0) {
-        throw new Error(parsedData.errors[0] || 'API returned an error');
+      if (parsedData.error) {
+        throw new Error(parsedData.message || 'API returned an error');
       }
       
       this.setState({ 
@@ -111,49 +78,18 @@ export class News extends Component {
 
   async componentDidMount() {
     try {
-      const apiKey = '9d27c0e98d9d1ba30340b3f6088cf746';
+      // Use Vercel proxy API to avoid CORS issues
+      const categoryMap = {
+        'business': 'business',
+        'entertainment': 'entertainment',
+        'health': 'health',
+        'science': 'science',
+        'sports': 'sports',
+        'technology': 'technology'
+      };
       
-      // Gnews API categories for Indian news
-      let category = 'general'; // default
-      
-      // Map categories to Gnews supported categories
-      switch(this.props.category.toLowerCase()) {
-        case 'business':
-          category = 'business';
-          break;
-        case 'entertainment':
-          category = 'entertainment';
-          break;
-        case 'health':
-          category = 'health';
-          break;
-        case 'science':
-          category = 'science';
-          break;
-        case 'sports':
-          category = 'sports';
-          break;
-        case 'technology':
-          category = 'technology';
-          break;
-        default:
-          category = 'general';
-      }
-      
-      // console.log(`Fetching news for category: ${this.props.category} -> ${category}`);
-      // console.log(`API URL: ${url}`);
-      
-      // Try different approaches for different categories
-      let url;
-      if (category === 'general') {
-        // For general, use top-headlines without category filter
-        url = `https://gnews.io/api/v4/top-headlines?lang=en&country=in&apikey=${apiKey}&page=${this.state.page}&max=${this.props.pageSize}`;
-      } else {
-        // For specific categories, use search with topic
-        url = `https://gnews.io/api/v4/search?q=${category}&lang=en&country=in&apikey=${apiKey}&page=${this.state.page}&max=${this.props.pageSize}`;
-      }
-      
-      // console.log(`API URL: ${url}`);
+      const category = categoryMap[this.props.category.toLowerCase()] || 'general';
+      let url = `/api/news?category=${category}&page=${this.state.page}&max=${this.props.pageSize}`;
       
       this.setState({ loading: true, error: null });
       
@@ -165,10 +101,8 @@ export class News extends Component {
       
       let parsedData = await data.json();
       
-      // console.log(`API Response:`, parsedData);
-      
-      if (parsedData.errors && parsedData.errors.length > 0) {
-        throw new Error(parsedData.errors[0] || 'API returned an error');
+      if (parsedData.error) {
+        throw new Error(parsedData.message || 'API returned an error');
       }
       
       this.setState({ 
