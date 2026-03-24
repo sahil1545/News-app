@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import NewsItem from './NewsItem';
-import Hello from './Hello';
 import PropTypes from 'prop-types'
  
 
@@ -35,14 +34,50 @@ export class News extends Component {
 
   async UpdateNews(){
     try {
-      const apiKey = process.env.REACT_APP_NEWS_API_KEY;
-      const country = process.env.REACT_APP_COUNTRY || 'us';
+      const apiKey = '9d27c0e98d9d1ba30340b3f6088cf746';
       
-      if (!apiKey) {
-        throw new Error('API key is missing. Please check your environment variables.');
+      // Gnews API categories for Indian news
+      let category = 'general'; // default
+      
+      // Map categories to Gnews supported categories
+      switch(this.props.category.toLowerCase()) {
+        case 'business':
+          category = 'business';
+          break;
+        case 'entertainment':
+          category = 'entertainment';
+          break;
+        case 'health':
+          category = 'health';
+          break;
+        case 'science':
+          category = 'science';
+          break;
+        case 'sports':
+          category = 'sports';
+          break;
+        case 'technology':
+          category = 'technology';
+          break;
+        default:
+          category = 'general';
       }
       
-      const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${this.props.category}&apiKey=${apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+      // console.log(`Fetching news for category: ${this.props.category} -> ${category}`);
+      // console.log(`API URL: ${url}`);
+      
+      // Try different approaches for different categories
+      let url;
+      if (category === 'general') {
+        // For general, use top-headlines without category filter
+        url = `https://gnews.io/api/v4/top-headlines?lang=en&country=in&apikey=${apiKey}&page=${this.state.page}&max=${this.props.pageSize}`;
+      } else {
+        // For specific categories, use search with topic
+        url = `https://gnews.io/api/v4/search?q=${category}&lang=en&country=in&apikey=${apiKey}&page=${this.state.page}&max=${this.props.pageSize}`;
+      }
+      
+      // console.log(`API URL: ${url}`);
+      
       this.setState({ loading: true, error: null });
       
       let data = await fetch(url);
@@ -53,13 +88,15 @@ export class News extends Component {
       
       let parsedData = await data.json();
       
-      if (parsedData.status === 'error') {
-        throw new Error(parsedData.message || 'API returned an error');
+      // console.log(`API Response:`, parsedData);
+      
+      if (parsedData.errors && parsedData.errors.length > 0) {
+        throw new Error(parsedData.errors[0] || 'API returned an error');
       }
       
       this.setState({ 
         articles: parsedData.articles || [],
-        totalResults: parsedData.totalResults || 0,
+        totalResults: parsedData.totalArticles || 0,
         loading: false
       });
     } catch (error) {
@@ -74,14 +111,50 @@ export class News extends Component {
 
   async componentDidMount() {
     try {
-      const apiKey = process.env.REACT_APP_NEWS_API_KEY;
-      const country = process.env.REACT_APP_COUNTRY || 'us';
+      const apiKey = '9d27c0e98d9d1ba30340b3f6088cf746';
       
-      if (!apiKey) {
-        throw new Error('API key is missing. Please check your environment variables.');
+      // Gnews API categories for Indian news
+      let category = 'general'; // default
+      
+      // Map categories to Gnews supported categories
+      switch(this.props.category.toLowerCase()) {
+        case 'business':
+          category = 'business';
+          break;
+        case 'entertainment':
+          category = 'entertainment';
+          break;
+        case 'health':
+          category = 'health';
+          break;
+        case 'science':
+          category = 'science';
+          break;
+        case 'sports':
+          category = 'sports';
+          break;
+        case 'technology':
+          category = 'technology';
+          break;
+        default:
+          category = 'general';
       }
       
-      let url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${this.props.category}&apiKey=${apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+      // console.log(`Fetching news for category: ${this.props.category} -> ${category}`);
+      // console.log(`API URL: ${url}`);
+      
+      // Try different approaches for different categories
+      let url;
+      if (category === 'general') {
+        // For general, use top-headlines without category filter
+        url = `https://gnews.io/api/v4/top-headlines?lang=en&country=in&apikey=${apiKey}&page=${this.state.page}&max=${this.props.pageSize}`;
+      } else {
+        // For specific categories, use search with topic
+        url = `https://gnews.io/api/v4/search?q=${category}&lang=en&country=in&apikey=${apiKey}&page=${this.state.page}&max=${this.props.pageSize}`;
+      }
+      
+      // console.log(`API URL: ${url}`);
+      
       this.setState({ loading: true, error: null });
       
       let data = await fetch(url);
@@ -92,13 +165,15 @@ export class News extends Component {
       
       let parsedData = await data.json();
       
-      if (parsedData.status === 'error') {
-        throw new Error(parsedData.message || 'API returned an error');
+      // console.log(`API Response:`, parsedData);
+      
+      if (parsedData.errors && parsedData.errors.length > 0) {
+        throw new Error(parsedData.errors[0] || 'API returned an error');
       }
       
       this.setState({ 
         articles: parsedData.articles || [],
-        totalResults: parsedData.totalResults || 0,
+        totalResults: parsedData.totalArticles || 0,
         loading: false
       });
       
@@ -132,7 +207,7 @@ export class News extends Component {
         <h1 style={{color:"white"}} className='text-center'><u>NEWS - Top Headlines</u></h1>
         
         {this.state.error && (
-          <div className="alert alert-danger" role="alert">
+          <div className="error-message">
             <strong>Error:</strong> {this.state.error}
             <br />
             <small>Please check your internet connection and try again later.</small>
@@ -140,11 +215,15 @@ export class News extends Component {
         )}
         
         <div>
-          {this.state.loading && <Hello/>}
+          {this.state.loading && (
+            <div className="loading-spinner">
+              <div className="spinner"></div>
+            </div>
+          )}
         </div>
         
         {!this.state.loading && !this.state.error && this.state.articles.length === 0 && (
-          <div className="text-center" style={{color: "white"}}>
+          <div className="no-articles">
             <h4>No articles found for this category.</h4>
             <p>Try selecting a different category or check back later.</p>
           </div>
@@ -155,21 +234,32 @@ export class News extends Component {
               <NewsItem
                 title={element.title ? element.title.slice(0, 45) : ''}
                 Description={element.description ? element.description.slice(0, 88) : ''}
-                imageUrl={element.urlToImage}
+                imageUrl={element.image}
                 newsUrl={element.url}
-                author={element.author}
+                author={element.source ? element.source.name : 'Unknown'}
                 date={element.publishedAt}
-                source={element.source.name}
+                source={element.source ? element.source.name : 'Unknown'}
               />
             </div>
           ))}
         </div>
          
         
-        <div className='container my-3 d-flex justify-content-between flex-column flex-md-row gap-2'>
-          <button style={{ backgroundColor: "#4CAF50", color: "white", border: "2px solid white"}} disabled={this.state.page <= 1}type="button"className="btn btn-dark"onClick={this.handlePrevClick}>&larr; Previous </button>
-          <button style={{ backgroundColor: "#4CAF50", color: "white", border: "2px solid white"}} disabled={this.state.page + 1 > Math.ceil(this.state.totalResults / this.props.pageSize)} type="button" className="btn btn-dark" onClick={this.handleNextClick}>  Next &rarr;</button>
-          
+        <div className='container my-3 pagination-container'>
+          <button 
+            className="pagination-btn" 
+            disabled={this.state.page <= 1}
+            onClick={this.handlePrevClick}
+          >
+            &larr; Previous
+          </button>
+          <button 
+            className="pagination-btn" 
+            disabled={this.state.page + 1 > Math.ceil(this.state.totalResults / this.props.pageSize)} 
+            onClick={this.handleNextClick}
+          >
+            Next &rarr;
+          </button>
         </div>
       </div>
       

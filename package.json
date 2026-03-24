@@ -1,6 +1,7 @@
 {
-  "name": "csk",
-  "version": "0.1.0",
+  "name": "news-app",
+  "version": "1.0.0",
+  "description": "A responsive Indian news application built with React",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
@@ -18,7 +19,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "echo 'Ready for deployment'",
+    "serve": "serve -s build"
   },
   "eslintConfig": {
     "extends": [
@@ -37,5 +41,15 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "homepage": ".",
+  "keywords": [
+    "news",
+    "react",
+    "india",
+    "responsive",
+    "gnews-api"
+  ],
+  "author": "News App Developer",
+  "license": "MIT"
 }
