@@ -319,7 +319,7 @@ export class VerticalNavbar extends Component {
         </div>
 
         {/* Add animations to document */}
-        <style jsx>{`
+        <style>{`
           @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
