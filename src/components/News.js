@@ -57,13 +57,18 @@ export class News extends Component {
       
       let parsedData = await data.json();
       
+      // Handle both real API and mock data responses
       if (parsedData.error) {
         throw new Error(parsedData.message || 'API returned an error');
       }
       
+      // Support both Gnews API format and mock data format
+      const articles = parsedData.articles || [];
+      const totalResults = parsedData.totalArticles || parsedData.totalResults || articles.length;
+      
       this.setState({ 
-        articles: parsedData.articles || [],
-        totalResults: parsedData.totalArticles || 0,
+        articles: articles,
+        totalResults: totalResults,
         loading: false
       });
     } catch (error) {
@@ -101,13 +106,18 @@ export class News extends Component {
       
       let parsedData = await data.json();
       
+      // Handle both real API and mock data responses
       if (parsedData.error) {
         throw new Error(parsedData.message || 'API returned an error');
       }
       
+      // Support both Gnews API format and mock data format
+      const articles = parsedData.articles || [];
+      const totalResults = parsedData.totalArticles || parsedData.totalResults || articles.length;
+      
       this.setState({ 
-        articles: parsedData.articles || [],
-        totalResults: parsedData.totalArticles || 0,
+        articles: articles,
+        totalResults: totalResults,
         loading: false
       });
       
