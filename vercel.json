@@ -2,6 +2,10 @@
   "version": 2,
   "builds": [
     {
+      "src": "api/news.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
@@ -11,6 +15,10 @@
   ],
   "routes": [
     {
+      "src": "/api/news",
+      "dest": "/api/news.js"
+    },
+    {
       "src": "/static/(.*)",
       "dest": "/static/$1",
       "headers": {
@@ -18,7 +26,7 @@
       }
     },
     {
-      "src": "/(.*)",
+      "src": "/(?!api/)(.*)",
       "dest": "/index.html",
       "headers": {
         "cache-control": "s-maxage=0,no-cache"

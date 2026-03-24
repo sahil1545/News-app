@@ -26,74 +26,50 @@ module.exports = async (req, res) => {
 
     console.log('Fetching URL:', url);
 
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'User-Agent': 'News-App/1.0',
-        'Accept': 'application/json'
-      }
-    });
+    const response = await fetch(url);
     
     console.log('Response status:', response.status);
-    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
     
-    // Get response text first to debug
+    // Get response as text first
     const responseText = await response.text();
-    console.log('Response text (first 200 chars):', responseText.substring(0, 200));
+    console.log('Response type check - first 100 chars:', responseText.substring(0, 100));
     
-    // Check if response is ok before parsing JSON
+    // Check if response is ok
     if (!response.ok) {
       console.error('API Error Response:', responseText);
-      
-      if (response.status === 401) {
-        return res.status(401).json({ 
-          error: 'API Key Error', 
-          message: 'The API key is invalid or expired. Please check your Gnews API key.',
-          details: responseText
-        });
-      } else if (response.status === 429) {
-        return res.status(429).json({ 
-          error: 'Rate Limit Exceeded', 
-          message: 'API rate limit exceeded. Please try again later.',
-          details: responseText
-        });
-      } else {
-        return res.status(response.status).json({ 
-          error: 'API Error', 
-          message: `API returned status ${response.status}`,
-          details: responseText
-        });
-      }
-    }
-
-    const contentType = response.headers.get('content-type');
-    console.log('Content-Type:', contentType);
-    
-    if (!contentType || !contentType.includes('application/json')) {
-      console.error('Invalid content type response:', responseText);
-      return res.status(500).json({ 
-        error: 'Invalid Response', 
-        message: 'API returned non-JSON response',
+      return res.status(response.status).json({ 
+        error: 'API Error', 
+        message: `API returned status ${response.status}`,
         details: responseText
       });
     }
 
-    // Parse JSON now that we know it's valid
+    // Check if response starts with HTML (error page)
+    if (responseText.startsWith('<!DOCTYPE') || responseText.startsWith('<html')) {
+      console.error('API returned HTML instead of JSON:', responseText.substring(0, 200));
+      return res.status(500).json({ 
+        error: 'Invalid Response', 
+        message: 'API returned HTML instead of JSON',
+        details: responseText.substring(0, 200)
+      });
+    }
+
+    // Try to parse as JSON
     let data;
     try {
       data = JSON.parse(responseText);
     } catch (parseError) {
       console.error('JSON Parse Error:', parseError);
-      console.error('Response that failed to parse:', responseText);
+      console.error('Response that failed to parse:', responseText.substring(0, 200));
       return res.status(500).json({ 
         error: 'JSON Parse Error', 
         message: 'Failed to parse API response as JSON',
-        details: responseText
+        details: responseText.substring(0, 200)
       });
     }
     
-    console.log('API Response data:', data);
-    
+    console.log('Successfully parsed API data');
+
     // Check if API returned an error
     if (data.errors && data.errors.length > 0) {
       console.error('API Errors:', data.errors);
